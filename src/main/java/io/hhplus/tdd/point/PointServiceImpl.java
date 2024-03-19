@@ -3,6 +3,7 @@ package io.hhplus.tdd.point;
 import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,13 +11,13 @@ public class PointServiceImpl implements PointService {
   private final UserPointTable userPointTable;
   private final PointHistoryTable pointHistoryTable;
 
+  @Autowired
   public PointServiceImpl(UserPointTable userPointTable, PointHistoryTable pointHistoryTable) {
     this.userPointTable = userPointTable;
     this.pointHistoryTable = pointHistoryTable;
   }
 
   public UserPoint getUserPoint(long userId) {
-
     return userPointTable.selectById(userId);
   }
 
@@ -25,7 +26,7 @@ public class PointServiceImpl implements PointService {
     return pointHistoryTable.selectAllByUserId(userId);
   }
 
-  public UserPoint charge(long id, long amount) {
+  public UserPoint charge(long id, long amount) throws IllegalArgumentException {
     validateUserPointAmount(amount);
 
     UserPoint currentUserPoint = userPointTable.selectById(id);
@@ -35,7 +36,8 @@ public class PointServiceImpl implements PointService {
     return userPointTable.insertOrUpdate(id, currentUserPoint.point() + pointHistory.amount());
   }
 
-  public UserPoint use(long id, long amount) {
+  public UserPoint use(long id, long amount)
+      throws IllegalArgumentException, InsufficientPointsException {
     validateUserPointAmount(amount);
 
     UserPoint currentUserPoint = userPointTable.selectById(id);

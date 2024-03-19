@@ -16,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class TestPointService {
+public class TestPointServiceWithMock {
   @InjectMocks private PointServiceImpl pointService;
   @Mock private UserPointTable mockUserPointTable;
   @Mock private PointHistoryTable mockPointHistoryTable;
@@ -51,10 +51,6 @@ public class TestPointService {
     assertEquals(0, userPoint.point());
   }
 
-  // 이런 테스트도 유효한 건지.
-  // 차리리 실 table 을 stubing 하는 게 나을 것 같은데,
-  // 실제 DB layer 를 가정하고 모킹하다보니
-  // 이런 테스트 방식이 유효한 건지 모르겠음.
   @Test
   public void getPointHistories_ByUserId() {
     long userId = 1;
