@@ -2,6 +2,7 @@ package io.hhplus.tdd.point;
 
 import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,16 +15,14 @@ public class PointServiceImpl implements PointService {
     this.pointHistoryTable = pointHistoryTable;
   }
 
-  //        public UserPoint point(long id) {
-  //            return UserPoint.empty(id);
-  //        }
-  //
-  //        public List<PointHistory> history(long id) {
-  //            return List.of();
-  //        }
+  public UserPoint getUserPoint(long userId) {
 
-  public UserPoint get(long id) {
-    return userPointTable.selectById(id);
+    return userPointTable.selectById(userId);
+  }
+
+  public List<PointHistory> getPointHistories(long userId) {
+
+    return pointHistoryTable.selectAllByUserId(userId);
   }
 
   public UserPoint charge(long id, long amount) {

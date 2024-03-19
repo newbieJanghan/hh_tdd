@@ -1,12 +1,14 @@
 package io.hhplus.tdd.point;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
 
 import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,6 +25,50 @@ public class TestPointService {
   public void init() {
     MockitoAnnotations.initMocks(this);
     pointService = new PointServiceImpl(mockUserPointTable, mockPointHistoryTable);
+  }
+
+  @Test
+  public void getUserPoint_ByUserId() {
+    long userId = 1;
+    long currentAmount = 100;
+    long currentUpdateMillis = 100L;
+    when(mockUserPointTable.selectById(userId))
+        .thenReturn(new UserPoint(userId, currentAmount, currentUpdateMillis));
+
+    UserPoint userPoint = pointService.getUserPoint(userId);
+    assertEquals(userId, userPoint.id());
+    assertEquals(currentAmount, userPoint.point());
+    assertNotEquals(System.currentTimeMillis(), userPoint.updateMillis());
+  }
+
+  @Test
+  public void getDefaultUserPoint_WhenUserPointIsNotExist() {
+    long userId = 1;
+    when(mockUserPointTable.selectById(userId)).thenReturn(UserPoint.empty(userId));
+
+    UserPoint userPoint = pointService.getUserPoint(userId);
+    assertEquals(userId, userPoint.id());
+    assertEquals(0, userPoint.point());
+  }
+
+  // 이런 테스트도 유효한 건지.
+  // 차리리 실 table 을 stubing 하는 게 나을 것 같은데,
+  // 실제 DB layer 를 가정하고 모킹하다보니
+  // 이런 테스트 방식이 유효한 건지 모르겠음.
+  @Test
+  public void getPointHistories_ByUserId() {
+    long userId = 1;
+    PointHistory[] currentPointHistories =
+        new PointHistory[] {
+          new PointHistory(1, userId, 100, TransactionType.CHARGE, System.currentTimeMillis()),
+          new PointHistory(2, userId, 50, TransactionType.USE, System.currentTimeMillis())
+        };
+
+    when(mockPointHistoryTable.selectAllByUserId(userId))
+        .thenReturn(List.of(currentPointHistories));
+
+    List<PointHistory> pointHistories = pointService.getPointHistories(userId);
+    assertEquals(2, pointHistories.size());
   }
 
   @Test
@@ -87,14 +133,13 @@ public class TestPointService {
     when(mockUserPointTable.selectById(userId))
         .thenReturn(new UserPoint(userId, currentAmount, System.currentTimeMillis()));
 
-    PointHistory pointHistory =
-        new PointHistory(1, userId, amount, type, System.currentTimeMillis());
-
-    when(mockPointHistoryTable.insert(userId, amount, type, System.currentTimeMillis()))
-        .thenReturn(pointHistory);
+    when(mockPointHistoryTable.insert(anyLong(), anyLong(), any(TransactionType.class), anyLong()))
+        .thenReturn(new PointHistory(1, userId, amount, type, System.currentTimeMillis()));
   }
 
-  /** table.insert argument 를 캡처 argument 가 updated 되어 있기를 기대하기 때문. */
+  // table.insert argument 를 캡처하는 세팅입니다.
+  // service 입장에선 argument 가 updated 되어 있기를 기대하기 때문에
+  // 이를 캡쳐하여 확인합니다.
   private Long captureAmountArgument() {
     ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
     then(mockUserPointTable).should().insertOrUpdate(captor.capture(), captor.capture());

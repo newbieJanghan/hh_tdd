@@ -1,7 +1,11 @@
 package io.hhplus.tdd.point;
 
+import java.util.List;
+
 public interface PointService {
-  public UserPoint get(long id);
+  public UserPoint getUserPoint(long id);
+
+  public List<PointHistory> getPointHistories(long id);
 
   public UserPoint charge(long id, long amount);
 
