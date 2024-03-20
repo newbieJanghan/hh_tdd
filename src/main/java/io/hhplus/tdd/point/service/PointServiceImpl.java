@@ -1,7 +1,11 @@
-package io.hhplus.tdd.point;
+package io.hhplus.tdd.point.service;
 
 import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
+import io.hhplus.tdd.point.exceptions.InsufficientPointsException;
+import io.hhplus.tdd.point.model.PointHistory;
+import io.hhplus.tdd.point.model.TransactionType;
+import io.hhplus.tdd.point.model.UserPoint;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

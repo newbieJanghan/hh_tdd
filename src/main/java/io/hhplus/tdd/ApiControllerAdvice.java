@@ -1,6 +1,6 @@
 package io.hhplus.tdd;
 
-import io.hhplus.tdd.point.InsufficientPointsException;
+import io.hhplus.tdd.point.exceptions.InsufficientPointsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

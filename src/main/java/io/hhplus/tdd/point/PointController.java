@@ -1,5 +1,8 @@
 package io.hhplus.tdd.point;
 
+import io.hhplus.tdd.point.model.PointHistory;
+import io.hhplus.tdd.point.model.UserPoint;
+import io.hhplus.tdd.point.service.PointServiceImpl;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
