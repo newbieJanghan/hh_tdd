@@ -125,19 +125,21 @@ public class TestPointServiceWithStub {
   @Test
   public void charge100Point_ToExistUser_With100Point_ThenHas200Point() {
     long userId = 1;
+    long currentUserPoint = 100;
+    long chargeAmount = 100;
 
     // given
     HashMap<Long, UserPoint> table = new HashMap<>();
-    table.put(userId, new UserPoint(userId, 100, System.currentTimeMillis()));
+    table.put(userId, new UserPoint(userId, currentUserPoint, System.currentTimeMillis()));
 
     userPointTableStub.setTable(table);
 
     // when
-    UserPoint userPoint = pointService.charge(userId, 100);
+    UserPoint userPoint = pointService.charge(userId, chargeAmount);
 
     // then
     assertEquals(userId, userPoint.id());
-    assertEquals(200, userPoint.point());
+    assertEquals(currentUserPoint + chargeAmount, userPoint.point());
   }
 
   @Test

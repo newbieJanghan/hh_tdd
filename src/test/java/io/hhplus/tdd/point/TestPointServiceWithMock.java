@@ -37,8 +37,8 @@ public class TestPointServiceWithMock {
     long userId = 1;
     long currentAmount = 100;
     long currentUpdateMillis = 100L;
-    when(mockUserPointTable.selectById(userId))
-        .thenReturn(new UserPoint(userId, currentAmount, currentUpdateMillis));
+    UserPoint currentUserPoint = new UserPoint(userId, currentAmount, currentUpdateMillis);
+    when(mockUserPointTable.selectById(userId)).thenReturn(currentUserPoint);
 
     UserPoint userPoint = pointService.getUserPoint(userId);
     assertEquals(userId, userPoint.id());
@@ -49,11 +49,13 @@ public class TestPointServiceWithMock {
   @Test
   public void getDefaultUserPoint_WhenUserPointIsNotExist() {
     long userId = 1;
-    when(mockUserPointTable.selectById(userId)).thenReturn(UserPoint.empty(userId));
+    UserPoint defaultUserPoint = UserPoint.empty(userId);
+    when(mockUserPointTable.selectById(userId)).thenReturn(defaultUserPoint);
 
     UserPoint userPoint = pointService.getUserPoint(userId);
-    assertEquals(userId, userPoint.id());
-    assertEquals(0, userPoint.point());
+    assertEquals(defaultUserPoint.id(), userPoint.id());
+    assertEquals(defaultUserPoint.point(), userPoint.point());
+    assertEquals(defaultUserPoint.updateMillis(), userPoint.updateMillis());
   }
 
   @Test
@@ -73,7 +75,7 @@ public class TestPointServiceWithMock {
   }
 
   @Test
-  public void charge100Point_ToZeroPoint_ThenInsert100Point() {
+  public void charge100Point_ToZeroPoint_ThenInsert100Point() throws InterruptedException {
     long userId = 1;
     long currentAmount = 0;
     long amount = 100;
@@ -85,7 +87,7 @@ public class TestPointServiceWithMock {
 
     // then
     Long capturedAmount = captureAmountArgument();
-    assertEquals(amount, capturedAmount);
+    assertEquals((currentAmount + amount), capturedAmount);
   }
 
   @Test
@@ -114,7 +116,7 @@ public class TestPointServiceWithMock {
 
     // then
     Long capturedAmount = captureAmountArgument();
-    assertEquals(0, capturedAmount);
+    assertEquals((currentAmount - amount), capturedAmount);
   }
 
   @Test
