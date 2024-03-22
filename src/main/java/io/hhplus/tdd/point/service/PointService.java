@@ -9,7 +9,7 @@ public interface PointService {
 
   public List<PointHistory> getPointHistories(long id);
 
-  public UserPoint charge(long id, long amount);
+  public UserPoint charge(long id, long amount) throws InterruptedException;
 
   public UserPoint use(long id, long amount);
 }
